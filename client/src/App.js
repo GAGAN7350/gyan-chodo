@@ -23,6 +23,11 @@ function App() {
     }
   };
 
+  
+  
+  
+  
+  
   // 2. POST NEW GYAN
   const postGyan = async (e) => {
     e.preventDefault();
