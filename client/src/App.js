@@ -23,7 +23,7 @@ function App() {
     e.preventDefault();
     if (!newGyan.trim()) return;
     try {
-      const response = await fetch(`https://gyan-chodo-backend.onrender.com/update-count/${id}`, {
+      const response = await fetch(`https://gyan-chodo-backend.onrender.com/update-count/${gyan.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: newGyan, author: "Founder" })
