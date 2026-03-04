@@ -11,7 +11,7 @@ const dbConfig = {
     host: 'gyanchodo-gyanchodo69.d.aivencloud.com',
     port: 10939,
     user: 'avnadmin',
-    password: 'AVNS_sll6wWHjTRT5SMcyt43', // <--- CLICK THE EYE ICON IN YOUR PHOTO
+    password: 'NICE TRY DD', // <--- CLICK THE EYE ICON IN YOUR PHOTO
     database: 'defaultdb',
     ssl: { rejectUnauthorized: false }
 };
