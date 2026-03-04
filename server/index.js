@@ -7,14 +7,17 @@ app.use(cors());
 app.use(express.json());
 
 // Aiven Connection Config
-const dbConfig = {
-    host: 'gyanchodo-gyanchodo69.d.aivencloud.com',
-    port: 10939,
-    user: 'avnadmin',
-    password: 'NICE TRY DD', // <--- CLICK THE EYE ICON IN YOUR PHOTO
-    database: 'defaultdb',
-    ssl: { rejectUnauthorized: false }
-};
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+  ssl: {
+    rejectUnauthorized: false // This allows the connection to Aiven
+  }
+});
+
 
 let pool;
 
