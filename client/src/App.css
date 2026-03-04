@@ -1,0 +1,171 @@
+/* 1. Global Layout & Theme */
+.App-header {
+  background-color: #121212; /* Deep modern dark mode */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #e0e0e0;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 2. Typography & Headers */
+h1 {
+  font-size: 3.5rem;
+  margin-bottom: 5px;
+  letter-spacing: -1px;
+  background: linear-gradient(90deg, #61dafb, #ff4b2b);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 10px rgba(97, 218, 251, 0.3));
+}
+
+.subtitle {
+  color: #888;
+  margin-bottom: 30px;
+  font-weight: 400;
+}
+
+/* 3. The Gyan Input Form */
+.gyan-form {
+  margin: 20px 0 40px 0;
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 550px;
+}
+
+.gyan-form input {
+  flex: 1;
+  padding: 14px 22px;
+  border-radius: 30px;
+  border: 1px solid #333;
+  background: #1e1e1e;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.gyan-form input:focus {
+  border-color: #61dafb;
+  box-shadow: 0 0 15px rgba(97, 218, 251, 0.2);
+  background: #252525;
+}
+
+.drop-btn {
+  background: #61dafb !important;
+  color: #121212 !important;
+  border: none;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.drop-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(97, 218, 251, 0.4);
+}
+
+/* 4. The Feed & Cards */
+.feed {
+  width: 100%;
+  max-width: 550px;
+}
+
+.gyan-card {
+  background: #1e1e1e;
+  border-radius: 20px;
+  padding: 28px;
+  margin: 24px 0;
+  text-align: left;
+  border: 1px solid #333;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+}
+
+.gyan-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+  border-color: #444;
+}
+
+.content {
+  font-size: 1.4rem;
+  line-height: 1.4;
+  margin-bottom: 15px;
+  color: #ffffff;
+  font-weight: 300;
+}
+
+.author {
+  color: #666;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+/* 5. Interactive Buttons & Toggle States */
+.actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+button {
+  border: 1px solid transparent;
+  padding: 12px 22px;
+  border-radius: 40px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+/* Standard Button States (Unclicked) */
+.wah-btn {
+  background: rgba(97, 218, 251, 0.05);
+  color: #61dafb;
+  border: 1px solid rgba(97, 218, 251, 0.3);
+}
+
+.chup-btn {
+  background: rgba(255, 75, 43, 0.05);
+  color: #ff4b2b;
+  border: 1px solid rgba(255, 75, 43, 0.3);
+}
+
+/* 6. ACTIVE/SELECTED STATES */
+/* When a user clicks a button, the .active class is applied */
+
+.wah-btn.active {
+  background: #61dafb !important;
+  color: #121212 !important;
+  box-shadow: 0 0 20px rgba(97, 218, 251, 0.5);
+  border-color: #61dafb;
+  transform: scale(1.05);
+}
+
+.chup-btn.active {
+  background: #ff4b2b !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(255, 75, 43, 0.5);
+  border-color: #ff4b2b;
+  transform: scale(1.05);
+}
+
+/* Hover effects for non-active buttons */
+button:hover:not(.active) {
+  transform: translateY(-2px);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+button:active {
+  transform: scale(0.95);
+}
