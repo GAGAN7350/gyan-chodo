@@ -7,7 +7,7 @@ const Auth = () => {
 
     const analyzePassword = (pass) => {
         if (!pass) return { message: '', color: '#888' };
-        if (pass.length < 6) return { message: ' BRO EVEN JOSHI WILL CRACK THIS', color: '#ff4d4d' };
+        if (pass.length < 6) return { message: '❌ HACKABLE IN MILLISECONDS', color: '#ff4d4d' };
         if (!/[0-9]/.test(pass) || !/[A-Z]/.test(pass)) return { message: '⚠️ VULNERABLE TO BRUTE FORCE', color: '#ffa500' };
         return { message: '🛡️ SECURE ENCRYPTION READY', color: '#00ff88' };
     };
@@ -18,11 +18,47 @@ const Auth = () => {
         setSecurityAnalysis(analyzePassword(pass));
     };
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const endpoint = isLogin ? '/login' : '/register';
+        // REPLACE THE URL BELOW WITH YOUR ACTUAL RENDER URL
+        const backendURL = `https://YOUR-RENDER-URL.onrender.com${endpoint}`;
+
+        console.log(`Attempting to ${isLogin ? 'Login' : 'Register'} at: ${backendURL}`);
+
+        try {
+            const response = await fetch(backendURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+            console.log("Server Response:", data);
+
+            if (response.ok) {
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', data.username || formData.username);
+                    alert(`SUCCESS: ${isLogin ? 'Logged In' : 'User Initialized'}`);
+                    // You can redirect to feed here: window.location.href = '/feed';
+                } else {
+                    alert(data.message || "Action Successful");
+                }
+            } else {
+                alert(`FAILED: ${data.error || data.message || 'Unknown Error'}`);
+            }
+        } catch (err) {
+            console.error("Connection error:", err);
+            alert("CANNOT REACH SERVER. Is the Render backend awake?");
+        }
+    };
+
     const styles = {
         container: {
             backgroundColor: '#0d1117',
             color: '#c9d1d9',
-            height: '100vh',
+            minHeight: '100vh',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -45,7 +81,8 @@ const Auth = () => {
             border: '1px solid #30363d',
             color: 'white',
             borderRadius: '5px',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            outline: 'none'
         },
         button: {
             width: '100%',
@@ -63,42 +100,51 @@ const Auth = () => {
             color: '#58a6ff',
             cursor: 'pointer',
             fontSize: '0.8rem',
-            textAlign: 'center'
+            textAlign: 'center',
+            textDecoration: 'underline'
         }
     };
 
     return (
         <div style={styles.container}>
             <div style={styles.card}>
-                <h1 style={{ textAlign: 'center', color: '#58a6ff' }}>
+                <h1 style={{ textAlign: 'center', color: '#58a6ff', marginBottom: '20px' }}>
                     {isLogin ? '> AUTH_LOGIN' : '> CREATE_USER'}
                 </h1>
-                <form onSubmit={(e) => e.preventDefault()}>
+                
+                <form onSubmit={handleSubmit}>
                     {!isLogin && (
                         <input 
                             style={styles.input}
                             placeholder="username" 
+                            required
                             onChange={(e) => setFormData({...formData, username: e.target.value})} 
                         />
                     )}
                     <input 
                         style={styles.input}
+                        type="email"
                         placeholder="email_address" 
+                        required
                         onChange={(e) => setFormData({...formData, email: e.target.value})} 
                     />
                     <input 
                         style={styles.input}
                         type="password" 
                         placeholder="password" 
+                        required
                         onChange={handlePasswordChange} 
                     />
                     
-                    <div style={{ fontSize: '0.7rem', color: securityAnalysis.color, marginBottom: '10px' }}>
+                    <div style={{ fontSize: '0.7rem', color: securityAnalysis.color, marginBottom: '15px', minHeight: '1rem' }}>
                         {securityAnalysis.message}
                     </div>
 
-                    <button style={styles.button}>{isLogin ? 'EXECUTE LOGIN' : 'INITIALIZE USER'}</button>
+                    <button type="submit" style={styles.button}>
+                        {isLogin ? 'EXECUTE LOGIN' : 'INITIALIZE USER'}
+                    </button>
                 </form>
+
                 <div style={styles.toggle} onClick={() => setIsLogin(!isLogin)}>
                     {isLogin ? '[ Register New Account ]' : '[ Existing User Login ]'}
                 </div>
