@@ -1,151 +1,71 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
+import React, { useState } from 'react';
 
-// The base URL for your backend on Render
-const API_BASE_URL = "https://gyan-chodo-backend.onrender.com";
+const Auth = () => {
+    const [isLogin, setIsLogin] = useState(false);
+    const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+    const [securityTip, setSecurityTip] = useState('');
 
-function App() {
-  const [gyans, setGyans] = useState([]);
-  const [newGyan, setNewGyan] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [votedItems, setVotedItems] = useState({}); // Stores { gyan_id: "wah_wah" OR "chup_kar" }
+    const checkPasswordStrength = (pass) => {
+        if (pass.length === 0) return "";
+        if (pass.length < 6) return "even joshi could crack this in seconds!";
+        if (!/[0-9]/.test(pass)) return "⚠️ WEAK:even joshi could crack this in seconds!";
+        return "✅ STRONG: BUT NOT FOR ME!";
+    };
 
-  // 1. FETCH ALL GYANS
-  const fetchGyan = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/feed`);
-      const data = await response.json();
-      setGyans(Array.isArray(data) ? data : []);
-      setLoading(false);
-    } catch (err) {
-      console.error("Fetch Error:", err);
-      setLoading(false);
-    }
-  };
+    const handlePasswordChange = (e) => {
+        const pass = e.target.value;
+        setFormData({ ...formData, password: pass });
+        setSecurityTip(checkPasswordStrength(pass));
+    };
 
-  
-  
-  
-  
-  
-  // 2. POST NEW GYAN
-  const postGyan = async (e) => {
-    e.preventDefault();
-    if (!newGyan.trim()) return;
-    try {
-      const response = await fetch(`${API_BASE_URL}/post-gyan`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: newGyan, author: "Founder" })
-      });
-      
-      if (response.ok) {
-        setNewGyan(""); 
-        // Small delay to let DB update before refreshing
-        setTimeout(fetchGyan, 300);
-      }
-    } catch (err) {
-      console.error("Post Error:", err);
-    }
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const endpoint = isLogin ? '/login' : '/register';
+        const response = await fetch(`https://gyan-chodo-backend.onrender.com${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+            alert("Logged in! Now you can post Gyans securely.");
+        } else {
+            alert(data.message || data.error);
+        }
+    };
 
-  // 3. SEND VOTE TO BACKEND (Used by handleVote)
-  const sendVoteUpdate = async (id, type, direction) => {
-    try {
-      await fetch(`${API_BASE_URL}/update-count/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, direction })
-      });
-    } catch (err) {
-      console.error("Vote Update Error:", err);
-    }
-  };
-
-  // 4. THE MASTER VOTE HANDLER (Toggle Logic)
-  const handleVote = async (id, clickedType) => {
-    const existingVote = votedItems[id];
-
-    // Situation 1: Clicking the same button again -> Remove the vote
-    if (existingVote === clickedType) {
-      await sendVoteUpdate(id, clickedType, 'down');
-      setVotedItems(prev => {
-        const updated = { ...prev };
-        delete updated[id];
-        return updated;
-      });
-    } 
-    // Situation 2: Clicking the OTHER button -> Switch the vote
-    else if (existingVote && existingVote !== clickedType) {
-      await sendVoteUpdate(id, existingVote, 'down');
-      await sendVoteUpdate(id, clickedType, 'up');
-      setVotedItems(prev => ({ ...prev, [id]: clickedType }));
-    } 
-    // Situation 3: First time voting on this item
-    else {
-      await sendVoteUpdate(id, clickedType, 'up');
-      setVotedItems(prev => ({ ...prev, [id]: clickedType }));
-    }
-
-    // Refresh data to see the counts update
-    fetchGyan();
-  };
-
-  // INITIAL LOAD & AUTO-REFRESH
-  useEffect(() => {
-    fetchGyan();
-    // Refresh every 10 seconds to see other people's gyan
-    const interval = setInterval(fetchGyan, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <h1>✨ GYAN CHODO ✨</h1>
-        
-        <form onSubmit={postGyan} className="gyan-form">
-          <input 
-            type="text" 
-            placeholder="Share some wisdom..." 
-            value={newGyan}
-            onChange={(e) => setNewGyan(e.target.value)}
-          />
-          <button type="submit" className="drop-btn">Drop Gyan 🚀</button>
-        </form>
-        
-        <div className="feed">
-          {loading ? (
-            <p>Waking up the server... Please wait.</p>
-          ) : (
-            gyans.map((g) => (
-              <div key={g.gyan_id} className="gyan-card">
-                <p className="content">"{g.content}"</p>
-                <p className="author">— {g.author_name || "Anonymous"}</p>
+    return (
+        <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '10px' }}>
+            <h2>{isLogin ? "Welcome Back" : "Join the Awareness Program"}</h2>
+            <form onSubmit={handleSubmit}>
+                {!isLogin && (
+                    <input 
+                        type="text" placeholder="Username" 
+                        onChange={(e) => setFormData({...formData, username: e.target.value})} 
+                    />
+                )}
+                <input 
+                    type="email" placeholder="Email" 
+                    onChange={(e) => setFormData({...formData, email: e.target.value})} 
+                />
+                <input 
+                    type="password" placeholder="Password" 
+                    onChange={handlePasswordChange} 
+                />
                 
-                <div className="actions">
-                  <button 
-                    className={`wah-btn ${votedItems[g.gyan_id] === 'wah_wah' ? 'active' : ''}`}
-                    onClick={() => handleVote(g.gyan_id, 'wah_wah')}
-                  >
-                    🙏 Wah Wah ({g.wah_wah_count || 0})
-                  </button>
-                  
-                  <button 
-                    className={`chup-btn ${votedItems[g.gyan_id] === 'chup_kar' ? 'active' : ''}`}
-                    onClick={() => handleVote(g.gyan_id, 'chup_kar')}
-                  >
-                    🤫 Chup Kar ({g.chup_kar_count || 0})
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-          {!loading && gyans.length === 0 && <p>No wisdom here yet. Be the first!</p>}
-        </div>
-      </header>
-    </div>
-  );
-}
+                {/* THE AWARENESS TOOL TIP */}
+                <p style={{ color: securityTip.includes('✅') ? 'green' : 'red', fontSize: '0.8rem' }}>
+                    {securityTip}
+                </p>
 
-export default App;
+                <button type="submit">{isLogin ? "Login" : "Register"}</button>
+            </form>
+            <button onClick={() => setIsLogin(!isLogin)}>
+                {isLogin ? "Need an account? Sign Up" : "Already have an account? Login"}
+            </button>
+        </div>
+    );
+};
+
+export default Auth;
